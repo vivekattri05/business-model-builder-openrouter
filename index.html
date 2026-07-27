@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Business Model Builder</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">Business Model Builder</div>
+  <button id="settingsToggle" class="ghost-btn" type="button">Settings</button>
+</header>
+
+<main class="wrap">
+
+  <!-- Settings -->
+  <section id="settings" class="card">
+    <h2>Settings</h2>
+    <label class="field">
+      <span>OpenRouter API key</span>
+      <input type="password" id="apiKey" placeholder="sk-or-...">
+      <small>Get one free at <a href="https://openrouter.ai/keys" target="_blank" rel="noopener">openrouter.ai/keys</a>. It is saved only in this browser, never uploaded.</small>
+    </label>
+    <div class="row">
+      <label class="field">
+        <span>Model</span>
+        <select id="model">
+          <option value="anthropic/claude-3.5-sonnet">Claude 3.5 Sonnet (best quality, paid)</option>
+          <option value="openai/gpt-4o-mini">GPT-4o mini (cheap, good)</option>
+          <option value="google/gemini-2.0-flash-001">Gemini 2.0 Flash (cheap)</option>
+          <option value="meta-llama/llama-3.3-70b-instruct:free">Llama 3.3 70B (free, limited)</option>
+          <option value="__custom__">Custom (type below)</option>
+        </select>
+      </label>
+      <label class="field">
+        <span>Custom model id</span>
+        <input type="text" id="customModel" placeholder="provider/model-id">
+      </label>
+    </div>
+    <label class="check"><input type="checkbox" id="online" checked> Use live web search (:online) for research stages</label>
+    <button id="saveSettings" class="ghost-btn" type="button">Save settings</button>
+  </section>
+
+  <!-- Form -->
+  <section class="card">
+    <h2>New strategy pack</h2>
+    <label class="field">
+      <span>Business</span>
+      <input type="text" id="business" placeholder="e.g. seohub.ae  ·  or  ·  dental clinics in Pune">
+      <small>A website link, business name, niche, or idea. Any one, or several.</small>
+    </label>
+    <div class="row">
+      <div class="field">
+        <span>Report language</span>
+        <div class="radios">
+          <label><input type="radio" name="lang" value="English" checked> English</label>
+          <label><input type="radio" name="lang" value="Hinglish"> Hinglish</label>
+        </div>
+      </div>
+      <label class="field">
+        <span>Byline on reports <em>(optional)</em></span>
+        <input type="text" id="byline" placeholder="Your agency or consultant name">
+      </label>
+    </div>
+    <button id="runBtn" class="btn" type="button">Run deep research</button>
+    <p class="note">A full run makes several AI calls and can take 15 to 30 minutes. Keep this tab open.</p>
+    <div id="formError" class="alert" style="display:none"></div>
+  </section>
+
+  <!-- Progress -->
+  <section id="progress" class="card" style="display:none">
+    <h2>Working on your strategy pack</h2>
+    <ul id="stages" class="stages"></ul>
+    <div id="runError" class="alert" style="display:none"></div>
+  </section>
+
+  <!-- Results -->
+  <section id="results" class="card" style="display:none">
+    <div class="results-head">
+      <h2>Your strategy pack is ready</h2>
+    </div>
+    <div class="downloads">
+      <strong>Download:</strong>
+      <button data-dl="html" class="ghost-btn" type="button">Visual report (HTML)</button>
+      <button data-dl="pdf" class="ghost-btn" type="button">Report as PDF</button>
+      <button data-dl="doc" class="ghost-btn" type="button">Report as Word</button>
+      <button data-dl="bmc" class="ghost-btn" type="button">BMC diagram</button>
+      <button data-dl="emc" class="ghost-btn" type="button">Empathy map</button>
+      <button data-dl="md" class="ghost-btn" type="button">Reports (Markdown)</button>
+    </div>
+    <div class="tabs" id="viewTabs">
+      <button class="tab active" data-view="report" type="button">Visual Report</button>
+      <button class="tab" data-view="bmc" type="button">BMC Diagram</button>
+      <button class="tab" data-view="emc" type="button">Empathy Map</button>
+    </div>
+    <iframe id="viewer" class="viewer" title="Report preview"></iframe>
+  </section>
+
+</main>
+
+<footer class="foot">Runs entirely in your browser via OpenRouter. Your key stays local.</footer>
+
+<script src="pipeline.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
