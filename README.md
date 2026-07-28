@@ -19,9 +19,11 @@ Live app pattern: `https://<your-username>.github.io/<repo-name>/`
 - An Empathy Map diagram (poster style).
 - Downloads: HTML report, PDF (via print), Word (.doc), Markdown, and the two diagrams.
 - A per-run usage panel: time taken, cost, tokens (input, output, total), and AI calls.
-- A usage and timing history card: every past project with tokens, time, and cost,
-  plus averages (projects run, average time, average cost, total spent), and a Clear
-  button.
+- A project library: every finished run is kept in full, in this browser, including the
+  actual report and diagrams, not just its stats. Refreshing or closing the tab does
+  not lose it. Each entry has a View button (reopens it in the results viewer, with its
+  own downloads) and a Delete button, plus averages across everything you have run
+  (projects run, average time, average cost, total spent).
 
 All output is white-label: no AI or tool mentions, and no em dashes, so it reads as
 your own work. You choose English or Hinglish, and an optional byline (your agency or
@@ -36,12 +38,17 @@ consultant name) that appears on the report.
   OpenRouter allows browser (CORS) calls; Anthropic and Google do not, which is why
   the app routes through OpenRouter.
 - Your OpenRouter API key is entered in the dashboard and stored only in your
-  browser (localStorage). It is never committed to the repo or uploaded anywhere.
+  browser (localStorage), saved as you type it, not only when you click Save. It is
+  never committed to the repo or uploaded anywhere.
 - A full run makes about 9 model calls and takes roughly 15 to 30 minutes. Keep the
   tab open while it runs; the work happens in the tab.
 - Every finished step is checkpointed to localStorage. If a call fails or the tab is
   reloaded, running the same business, language, byline, and model again resumes from
   the last completed step instead of paying for the whole run twice.
+- Every finished run is written to an IndexedDB library in this browser: the full
+  report, both diagrams, and the markdown pack, alongside its stats. localStorage
+  alone would not hold this (it caps out around 5 to 10MB, and a single report can run
+  past 100KB); IndexedDB has far more room, and nothing is capped or auto-deleted.
 - Failed calls are retried up to four times with exponential backoff, and each call is
   abandoned after five minutes rather than hanging forever.
 - The report preview renders in a sandboxed iframe with no same-origin access, so the
@@ -135,15 +142,17 @@ channels, anchor pricing, and delivery.
 
 Each model call asks OpenRouter to return token counts and cost (`usage: {include:
 true}`). The app adds these up for the run and shows: time taken, cost, input tokens,
-output tokens, total tokens, and the number of AI calls. Every run is also saved to a
-local history so you can see averages and total spend per project over time.
+output tokens, total tokens, and the number of AI calls. Every finished run is also
+saved to the project library (see section 1) with its full report, so "Your projects"
+below the form is both a spend record and a way back into any past pack.
 
 You can also see the same data in your OpenRouter account:
 - Activity, every call with tokens and cost: https://openrouter.ai/activity
 - Credits and balance: https://openrouter.ai/credits
 
-Cost depends on the model. Claude Sonnet is the most expensive; GPT-4o mini and
-Gemini Flash are cheap; free models cost nothing but are rate-limited.
+Cost depends on the model you pick in Settings; nothing is preselected. The Opus and
+Sol tiers cost the most, Gemini Flash and the Luna tier are cheap, and free models cost
+nothing but are rate-limited.
 
 ---
 
@@ -235,8 +244,11 @@ scripts, fonts, images, or network calls, so a downloaded report phones nobody.
 - Free-tier models on OpenRouter are rate-limited and can fail mid-run.
 - The Word download is HTML saved as `.doc`; it opens cleanly in Word and Google
   Docs but is not a native `.docx`.
-- Usage history and checkpoints live in this browser's localStorage. They do not sync
-  between devices or browsers, and clearing site data removes them.
+- The project library lives in this browser's IndexedDB (settings and checkpoints stay
+  in localStorage). Neither syncs between devices or browsers, and clearing site data
+  removes both, so there is no cloud backup. This is the tradeoff for staying a static
+  site with no server and no account to sign into; if cross-device access ever matters
+  more than that, it would need a real backend.
 - Cost is what OpenRouter reports per call. Web search (`:online`) is billed by
   OpenRouter as part of the call, so the totals include it.
 

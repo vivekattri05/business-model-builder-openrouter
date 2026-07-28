@@ -66,12 +66,17 @@ input:focus,select:focus{border-color:var(--accent)}
 .stat .v{font-size:17px;font-weight:700;margin-top:2px}
 .avg{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px}
 .history{display:flex;flex-direction:column;gap:8px}
-.hrow{display:grid;grid-template-columns:1fr auto auto auto;gap:10px;align-items:center;
+.hrow{display:grid;grid-template-columns:1fr auto auto auto auto;gap:10px;align-items:center;
   background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:9px 12px;font-size:13px}
 .hrow .hname{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .hrow .hmeta{color:var(--muted);white-space:nowrap}
+.hactions{display:flex;gap:6px;align-items:center}
+.hactions .ghost-btn{padding:5px 10px;font-size:12px}
+.ghost-btn.danger{border-color:rgba(255,107,107,.35);color:#ffb3b3}
+.ghost-btn.danger:hover{border-color:var(--bad)}
 .history-empty{color:var(--muted);font-size:13px}
 #historyCard .clear{margin-top:12px}
+@media(max-width:640px){.hrow{grid-template-columns:1fr;gap:6px}.hactions{justify-content:flex-start}}
 /* resume banner */
 .resume{background:rgba(109,139,255,.1);border:1px solid rgba(109,139,255,.4);border-radius:10px;
   padding:12px 14px;margin:0 0 14px;font-size:13.5px;display:flex;flex-wrap:wrap;gap:10px;

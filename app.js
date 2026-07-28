@@ -6,6 +6,84 @@
     set: (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} },
   };
 
+  // ---- storage: IndexedDB holds every finished project in full (report,
+  // diagrams, markdown pack), not just its stats. localStorage tops out around
+  // 5 to 10MB and one report can run past 100KB, so the settings above stay in
+  // localStorage but the project library lives here, with no cap: the point is
+  // keeping every generation on record, not just the last few. ----
+  const DB_NAME = "bmb_projects", DB_VERSION = 1, STORE = "projects";
+  let dbPromise = null;
+  function openDB() {
+    if (dbPromise) return dbPromise;
+    dbPromise = new Promise((resolve, reject) => {
+      if (!window.indexedDB) return reject(new Error("IndexedDB is not available in this browser"));
+      let req;
+      try { req = indexedDB.open(DB_NAME, DB_VERSION); } catch (e) { return reject(e); }
+      req.onupgradeneeded = () => {
+        const db = req.result;
+        if (!db.objectStoreNames.contains(STORE)) db.createObjectStore(STORE, { keyPath: "id" });
+      };
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    });
+    return dbPromise;
+  }
+  function idbPut(record) {
+    return openDB().then((db) => new Promise((resolve, reject) => {
+      const tx = db.transaction(STORE, "readwrite");
+      tx.objectStore(STORE).put(record);
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
+    }));
+  }
+  function idbAll() {
+    return openDB().then((db) => new Promise((resolve, reject) => {
+      const req = db.transaction(STORE, "readonly").objectStore(STORE).getAll();
+      req.onsuccess = () => resolve(req.result || []);
+      req.onerror = () => reject(req.error);
+    }));
+  }
+  function idbDelete(id) {
+    return openDB().then((db) => new Promise((resolve, reject) => {
+      const tx = db.transaction(STORE, "readwrite");
+      tx.objectStore(STORE).delete(id);
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
+    }));
+  }
+  function idbClear() {
+    return openDB().then((db) => new Promise((resolve, reject) => {
+      const tx = db.transaction(STORE, "readwrite");
+      tx.objectStore(STORE).clear();
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
+    }));
+  }
+  // One-time move from the old stats-only localStorage list (from an earlier
+  // version of this app), so anyone who already has entries there still sees
+  // them listed. Those runs never had their content saved, so they show up
+  // marked "archived" instead of offering a broken View button.
+  async function migrateOldHistory() {
+    const raw = LS.get("bmb_history", "");
+    if (!raw) return;
+    try {
+      const old = JSON.parse(raw) || [];
+      const existing = await idbAll();
+      if (old.length && !existing.length) {
+        for (const x of old) {
+          await idbPut({
+            id: Date.now() + "-" + Math.random().toString(36).slice(2),
+            name: x.name || "", model: x.model || "", language: "", brand: "",
+            date: x.date || new Date().toISOString(), seconds: x.seconds || 0,
+            usage: { prompt: x.prompt || 0, completion: x.completion || 0, cost: x.cost || 0, calls: 0 },
+            reportHTML: "", bmcHTML: "", emcHTML: "", pack: "",
+          });
+        }
+      }
+    } catch (e) { /* nothing usable to migrate */ }
+    localStorage.removeItem("bmb_history");
+  }
+
   // No model is chosen for the user. The empty value selects the "Choose a model"
   // placeholder, and whatever they pick is saved and becomes their own default.
   const DEFAULT_MODEL = "";
@@ -44,6 +122,13 @@
     LS.set("bmb_online", $("online").checked ? "1" : "0");
   }
   $("saveSettings").addEventListener("click", () => { saveSettings(); flash($("saveSettings"), "Saved"); });
+  // Auto-save as soon as anything changes, so the key (or model, or the web
+  // search toggle) is never lost to a refresh just because "Save settings"
+  // was never clicked. The button still gives an explicit "Saved" confirmation.
+  $("apiKey").addEventListener("input", saveSettings);
+  $("model").addEventListener("change", saveSettings);
+  $("customModel").addEventListener("input", saveSettings);
+  $("online").addEventListener("change", saveSettings);
   $("settingsToggle").addEventListener("click", () => {
     const s = $("settings"); s.style.display = s.style.display === "none" ? "block" : "none";
   });
@@ -140,7 +225,7 @@
       const seconds = stopTimer();
       renderStages(0, true);
       RESULT._seconds = seconds;
-      saveHistory(business, model, RESULT.usage, seconds);
+      await saveProject(business, cfg, params, RESULT, seconds);
       showResults();
     } catch (e) {
       stopTimer();
@@ -201,43 +286,78 @@
     $("viewer").srcdoc = map[v] || "<p style='font-family:sans-serif;padding:20px'>Not available.</p>";
   }
 
-  // ---- history (per project) ----
-  function loadHistory() { try { return JSON.parse(LS.get("bmb_history", "[]")) || []; } catch (e) { return []; } }
-  function saveHistory(name, model, usage, seconds) {
-    const h = loadHistory();
-    const u = usage || {};
-    h.unshift({
-      name: name, model: model, date: new Date().toISOString(),
-      prompt: u.prompt || 0, completion: u.completion || 0,
-      total: (u.prompt || 0) + (u.completion || 0), cost: u.cost || 0, seconds: Math.round(seconds),
-    });
-    LS.set("bmb_history", JSON.stringify(h.slice(0, 25)));
-    renderHistory();
+  // ---- project library: every finished run, in full, kept until deleted ----
+  async function saveProject(business, cfg, params, result, seconds) {
+    const record = {
+      id: Date.now() + "-" + Math.random().toString(36).slice(2),
+      name: business, model: cfg.model, language: params.language, brand: params.brand || "",
+      date: new Date().toISOString(), seconds: Math.round(seconds),
+      usage: result.usage || { prompt: 0, completion: 0, cost: 0, calls: 0 },
+      reportHTML: result.reportHTML || "", bmcHTML: result.bmcHTML || "",
+      emcHTML: result.emcHTML || "", pack: result.pack || "",
+    };
+    try { await idbPut(record); }
+    catch (e) { console.warn("Could not save this project to your local library:", e); }
+    await renderHistory();
   }
-  function renderHistory() {
-    const h = loadHistory();
+
+  async function renderHistory() {
+    let h = [];
+    try { h = await idbAll(); } catch (e) { h = []; }
+    h.sort((a, b) => (b.date || "").localeCompare(a.date || ""));
     const avg = $("avg"), list = $("history");
-    if (!h.length) { avg.innerHTML = ""; list.innerHTML = '<div class="history-empty">No runs yet. Your past projects, tokens, cost, and time will show here.</div>'; return; }
+    if (!h.length) {
+      avg.innerHTML = "";
+      list.innerHTML = '<div class="history-empty">No runs yet. Every project you generate is kept here for good, with its cost, time, and the report itself, so you can reopen or download it later.</div>';
+      return;
+    }
     const n = h.length;
     const avgSec = h.reduce((a, x) => a + (x.seconds || 0), 0) / n;
-    const avgCost = h.reduce((a, x) => a + (x.cost || 0), 0) / n;
-    const totCost = h.reduce((a, x) => a + (x.cost || 0), 0);
+    const totCost = h.reduce((a, x) => a + ((x.usage && x.usage.cost) || 0), 0);
     avg.innerHTML =
       '<div class="stat"><div class="k">Projects run</div><div class="v">' + n + "</div></div>" +
       '<div class="stat"><div class="k">Avg time</div><div class="v">' + fmtTime(avgSec) + "</div></div>" +
-      '<div class="stat"><div class="k">Avg cost</div><div class="v">' + fmtCost(avgCost) + "</div></div>" +
+      '<div class="stat"><div class="k">Avg cost</div><div class="v">' + fmtCost(totCost / n) + "</div></div>" +
       '<div class="stat"><div class="k">Total spent</div><div class="v">' + fmtCost(totCost) + "</div></div>";
     list.innerHTML = h.map((x) => {
       const d = new Date(x.date);
       const when = d.toLocaleDateString() + " " + d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+      const u = x.usage || {};
+      const total = (u.prompt || 0) + (u.completion || 0);
+      const hasContent = !!(x.reportHTML || x.pack);
       return '<div class="hrow"><span class="hname" title="' + esc(x.name) + '">' + esc(x.name) + '</span>' +
         '<span class="hmeta">' + when + "</span>" +
-        '<span class="hmeta">' + fmtNum(x.total) + " tok · " + fmtTime(x.seconds) + "</span>" +
-        '<span class="hmeta">' + fmtCost(x.cost) + "</span></div>";
-    }).join("") + '<button class="ghost-btn clear" id="clearHist" type="button">Clear history</button>';
+        '<span class="hmeta">' + fmtNum(total) + " tok &middot; " + fmtTime(x.seconds) + "</span>" +
+        '<span class="hmeta">' + fmtCost(u.cost) + "</span>" +
+        '<span class="hactions">' +
+        (hasContent
+          ? '<button class="ghost-btn" data-view="' + x.id + '" type="button">View</button>'
+          : '<span class="hmeta">archived</span>') +
+        '<button class="ghost-btn danger" data-del="' + x.id + '" type="button">Delete</button></span></div>';
+    }).join("") + '<button class="ghost-btn clear" id="clearHist" type="button">Delete all history</button>';
+
+    list.querySelectorAll("[data-view]").forEach((b) => {
+      b.onclick = () => { const rec = h.find((x) => x.id === b.dataset.view); if (rec) viewProject(rec); };
+    });
+    list.querySelectorAll("[data-del]").forEach((b) => {
+      b.onclick = async () => {
+        if (!confirm("Delete this project? This cannot be undone.")) return;
+        await idbDelete(b.dataset.del);
+        renderHistory();
+      };
+    });
     const cb = $("clearHist");
-    if (cb) cb.onclick = () => { if (confirm("Clear all usage history?")) { LS.set("bmb_history", "[]"); renderHistory(); } };
+    if (cb) cb.onclick = async () => {
+      if (confirm("Delete every saved project? This cannot be undone.")) { await idbClear(); renderHistory(); }
+    };
   }
+
+  function viewProject(rec) {
+    RUN_NAME = rec.name;
+    RESULT = { reportHTML: rec.reportHTML, bmcHTML: rec.bmcHTML, emcHTML: rec.emcHTML, pack: rec.pack, usage: rec.usage, _seconds: rec.seconds };
+    showResults();
+  }
+
   function esc(s) { return String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
 
   // ---- downloads ----
@@ -268,6 +388,6 @@
   }
 
   // initial render
-  renderHistory();
+  migrateOldHistory().then(renderHistory);
   renderResume();
 })();
