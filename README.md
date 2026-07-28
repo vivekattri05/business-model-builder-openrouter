@@ -98,11 +98,14 @@ channels, anchor pricing, and delivery.
 
 - OpenRouter API key: get one at https://openrouter.ai/keys. Stored only in your
   browser.
-- Model: pick from the list or type a custom model id. Suggestions:
-  - `anthropic/claude-sonnet-5`, the recommended default: strong writing and reliable
-    on the big HTML design step, at a sensible price.
+- Model: nothing is preselected. Pick from the list or type a custom model id, and
+  your choice is saved as your default from then on. What is in the list:
+  - `anthropic/claude-sonnet-5`, strong writing and reliable on the big HTML design
+    step, at a sensible price.
   - `anthropic/claude-opus-5`, best quality, and the most expensive.
-  - `openai/gpt-5.6-terra`, strong, mid price.
+  - `openai/gpt-5.6-sol`, the strongest OpenAI tier.
+  - `openai/gpt-5.6-terra`, mid price.
+  - `openai/gpt-5.6-luna`, the cheapest OpenAI tier.
   - `google/gemini-3.5-flash`, fast and cheap.
   - `google/gemini-3.5-flash-lite`, the cheapest paid option.
   - `nvidia/nemotron-3-ultra-550b-a55b:free`, free but rate-limited and weaker at the
@@ -215,7 +218,8 @@ scripts, fonts, images, or network calls, so a downloaded report phones nobody.
 ## 11. Customization
 
 - Report design: edit `visual-report-template.html`. The output copies its style.
-- Models and defaults: edit the options in `index.html`, and `DEFAULT_MODEL` in `app.js`.
+- Models: edit the options in `index.html`. To preselect one for everybody, set
+  `DEFAULT_MODEL` in `app.js` to that id; leave it empty for no preselection.
 - Prompts and methodology: edit the `P` object and `METHOD` text in `pipeline.js`.
 - Timeouts and retries: `CALL_TIMEOUT_MS`, `MAX_ATTEMPTS`, and `MAX_CONTINUES` at the
   top of `pipeline.js`.

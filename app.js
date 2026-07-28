@@ -6,12 +6,14 @@
     set: (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} },
   };
 
-  const DEFAULT_MODEL = "anthropic/claude-sonnet-5";
+  // No model is chosen for the user. The empty value selects the "Choose a model"
+  // placeholder, and whatever they pick is saved and becomes their own default.
+  const DEFAULT_MODEL = "";
   // Models retired since an earlier version of this app. Anyone with one of these
-  // saved gets moved to the current equivalent instead of an empty custom box.
+  // saved gets moved to the nearest current equivalent instead of an empty box.
   const RETIRED = {
     "anthropic/claude-3.5-sonnet": "anthropic/claude-sonnet-5",
-    "openai/gpt-4o-mini": "openai/gpt-5.6-terra",
+    "openai/gpt-4o-mini": "openai/gpt-5.6-luna",
     "google/gemini-2.0-flash-001": "google/gemini-3.5-flash",
     "meta-llama/llama-3.3-70b-instruct:free": "nvidia/nemotron-3-ultra-550b-a55b:free",
   };

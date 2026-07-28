@@ -28,9 +28,10 @@ jaati hain.
 
 ## PART D, Use karo
 1. Wo link kholo.
-2. Upar **Settings** kholo , apni **OpenRouter key** paste karo , **model** chuno
-   (default Claude Sonnet 5 sabse balanced hai, sabse best ke liye Claude Opus 5,
-   saste ke liye Gemini 3.5 Flash) , **Save settings**.
+2. Upar **Settings** kholo , apni **OpenRouter key** paste karo , **model** chuno ,
+   **Save settings**. Koi model pehle se chuna hua nahi aata, aap jo chunoge wahi
+   aage se aapka default ban jayega. (Balance ke liye Claude Sonnet 5, sabse best
+   ke liye Claude Opus 5, saste ke liye Gemini 3.5 Flash ya GPT-5.6 Luna.)
 3. Business daalo (jaise `seohub.ae`), English/Hinglish chuno, byline (optional).
 4. **Run deep research** dabao. Tab **khula rakhna**. 15 se 30 min mein visual report
    usi page pe aa jaayega, saath mein download buttons (HTML, PDF, Word, diagrams).
