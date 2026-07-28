@@ -15,7 +15,8 @@ jaati hain.
 2. Naam do (jaise `bmb-dashboard`) , **Public** rakho (GitHub Pages free public repo pe
    sabse easy hai) , **Create repository**.
 3. **Add file , Upload files** , is folder ki **saari files** (index.html, style.css,
-   pipeline.js, app.js, visual-report-template.html, README, DEPLOY) drag karke daal do.
+   pipeline.js, app.js, visual-report-template.html, README, DEPLOY, LICENSE) drag
+   karke daal do.
    > Files repo ke root pe honi chahiye (index.html seedha dikhe).
 4. **Commit changes**.
 
@@ -28,7 +29,8 @@ jaati hain.
 ## PART D, Use karo
 1. Wo link kholo.
 2. Upar **Settings** kholo , apni **OpenRouter key** paste karo , **model** chuno
-   (best ke liye Claude 3.5 Sonnet ya GPT-4o mini) , **Save settings**.
+   (default Claude Sonnet 5 sabse balanced hai, sabse best ke liye Claude Opus 5,
+   saste ke liye Gemini 3.5 Flash) , **Save settings**.
 3. Business daalo (jaise `seohub.ae`), English/Hinglish chuno, byline (optional).
 4. **Run deep research** dabao. Tab **khula rakhna**. 15 se 30 min mein visual report
    usi page pe aa jaayega, saath mein download buttons (HTML, PDF, Word, diagrams).
@@ -46,5 +48,9 @@ Phir kholo http://localhost:8000
 - Key sirf tumhare browser mein save hoti hai, GitHub pe kabhi nahi jaati , safe.
 - Free models rate-limited hote hain aur final design step mein kamzor , acche result
   ke liye paid model (Claude/GPT) behtar.
-- Koi error aaye (jaise 401 = key galat, 402 = credit chahiye, 429 = limit) toh mujhe
-  message bata dena, turant theek kar denge.
+- Run beech mein fail ho jaaye ya tab band ho jaaye toh ghabrana mat: jo steps ho chuke
+  hain wo save rehte hain. Wahi business dobara run karo, app wahin se aage chalu kar
+  dega, dobara paise nahi lagenge. Naye sire se shuru karna ho toh Run button ke upar
+  wale banner mein "Discard saved progress" daba do.
+- Koi error aaye (jaise 401 = key galat, 402 = credit chahiye, 429 = limit, 404 = model
+  id galat) toh mujhe message bata dena, turant theek kar denge.

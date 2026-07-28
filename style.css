@@ -58,3 +58,21 @@ input:focus,select:focus{border-color:var(--accent)}
   border-radius:9px;cursor:pointer;font-size:13.5px}
 .tab.active{color:#fff;border-color:var(--accent);background:rgba(109,139,255,.16)}
 .viewer{width:100%;height:75vh;border:1px solid var(--line);border-radius:10px;margin-top:14px;background:#fff}
+/* usage + timing */
+.elapsed{font-size:14px;color:var(--accent);font-weight:600;margin:0 0 12px}
+.usage{display:flex;flex-wrap:wrap;gap:10px;margin:4px 0 6px}
+.stat{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:10px 14px;min-width:120px}
+.stat .k{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.stat .v{font-size:17px;font-weight:700;margin-top:2px}
+.avg{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px}
+.history{display:flex;flex-direction:column;gap:8px}
+.hrow{display:grid;grid-template-columns:1fr auto auto auto;gap:10px;align-items:center;
+  background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:9px 12px;font-size:13px}
+.hrow .hname{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hrow .hmeta{color:var(--muted);white-space:nowrap}
+.history-empty{color:var(--muted);font-size:13px}
+#historyCard .clear{margin-top:12px}
+/* resume banner */
+.resume{background:rgba(109,139,255,.1);border:1px solid rgba(109,139,255,.4);border-radius:10px;
+  padding:12px 14px;margin:0 0 14px;font-size:13.5px;display:flex;flex-wrap:wrap;gap:10px;
+  align-items:center;justify-content:space-between}

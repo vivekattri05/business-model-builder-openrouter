@@ -1,53 +1,243 @@
-# Business Model Builder, browser dashboard (OpenRouter)
+# Business Model Builder (browser dashboard)
 
-A dashboard that runs entirely in the browser. Enter a business, and it runs the full
-research pass through the OpenRouter API and shows a client-ready visual report in the
-same page, with downloads.
+A single-page web app that turns one input, a website link, business name, niche, or
+idea, into a complete, client-ready strategy pack. It runs entirely in your browser
+and calls the OpenRouter API directly. There is no backend server, so it hosts free
+on GitHub Pages.
 
-No server and no Render. It is a static site, so it hosts free on GitHub Pages. The
-AI calls go straight from your browser to OpenRouter (OpenRouter allows browser calls;
-Anthropic and Google do not, which is why we route through OpenRouter).
+Live app pattern: `https://<your-username>.github.io/<repo-name>/`
 
-## What it produces
-- A single-page visual report (`05-Visual-Report` style), rendered in the page
-- A BMC canvas diagram and an Empathy Map diagram
-- Downloads: HTML report, PDF (print), Word (.doc), Markdown, and the two diagrams
+---
 
-## Files
-- `index.html`, the dashboard
-- `style.css`
-- `pipeline.js`, the 7-stage flow calling OpenRouter (research, empathy, competitor, BMC, growth, QA, designer)
-- `app.js`, UI logic (key storage, progress, downloads)
-- `visual-report-template.html`, the proven report design the output matches
+## 1. What it produces (every run)
 
-## Your API key is safe
-You paste your OpenRouter key into the dashboard. It is stored only in your browser
-(localStorage) and is never put in the repository or uploaded anywhere. If you make
-the site public, each visitor enters their own key.
+- A single-page visual report (`05-Visual-Report` style): gradient header, sticky
+  navigation, and six numbered sections (Executive Summary, Business Model Canvas,
+  Empathy Map, Competitor Analysis, Kano Model Matrix, 40-Day Growth Plan), with a
+  colour-coded Kano table and a growth-plan timeline.
+- A Business Model Canvas diagram (poster style, filled with the business content).
+- An Empathy Map diagram (poster style).
+- Downloads: HTML report, PDF (via print), Word (.doc), Markdown, and the two diagrams.
+- A per-run usage panel: time taken, cost, tokens (input, output, total), and AI calls.
+- A usage and timing history card: every past project with tokens, time, and cost,
+  plus averages (projects run, average time, average cost, total spent), and a Clear
+  button.
 
-## Deploy on GitHub Pages (free, no Render)
-1. Create an OpenRouter account and key at https://openrouter.ai/keys
-2. Put these files in a GitHub repository (upload all files at the repo root).
-3. Repo, Settings, Pages, Source: "Deploy from a branch", Branch: `main`, folder `/root`, Save.
-4. Wait 1 to 2 minutes. Your dashboard is live at `https://<username>.github.io/<repo>/`.
-5. Open it, click Settings, paste your OpenRouter key, pick a model, then run.
+All output is white-label: no AI or tool mentions, and no em dashes, so it reads as
+your own work. You choose English or Hinglish, and an optional byline (your agency or
+consultant name) that appears on the report.
 
-## Run locally
-Because the app fetches `visual-report-template.html`, open it through a small local
-server (not by double-clicking the file):
+---
+
+## 2. How it works (architecture)
+
+- Pure front end: HTML, CSS, and vanilla JavaScript. No build step, no server.
+- The browser calls `https://openrouter.ai/api/v1/chat/completions` directly.
+  OpenRouter allows browser (CORS) calls; Anthropic and Google do not, which is why
+  the app routes through OpenRouter.
+- Your OpenRouter API key is entered in the dashboard and stored only in your
+  browser (localStorage). It is never committed to the repo or uploaded anywhere.
+- A full run makes about 9 model calls and takes roughly 15 to 30 minutes. Keep the
+  tab open while it runs; the work happens in the tab.
+- Every finished step is checkpointed to localStorage. If a call fails or the tab is
+  reloaded, running the same business, language, byline, and model again resumes from
+  the last completed step instead of paying for the whole run twice.
+- Failed calls are retried up to four times with exponential backoff, and each call is
+  abandoned after five minutes rather than hanging forever.
+- The report preview renders in a sandboxed iframe with no same-origin access, so the
+  generated HTML cannot reach the page's localStorage where the API key is stored.
+
+### The seven agents (in `pipeline.js`)
+
+Seven agent prompts, shown in the dashboard as six progress stages: the empathy map
+and the competitor research run at the same time, so they share stage 2.
+1. Research: business, market (Wealth / Health / Relationships), niche and buyer
+   floor, demographics and psychographics, Big Domino problem, real-life situations,
+   and a starting competitor list. Uses live web search.
+2. Empathy Map: Think & Feel, See, Hear, Say & Do, Pain, Gain, plus a niche
+   archetype, in the customer's real words. Uses live web search.
+3. Competitor and Kano: 10 or more real competitors, each classified into
+   Must-Haves, Performance Benefits, and Delighters, plus an SEO audit, a gap
+   analysis, and a full Kano matrix. Uses live web search.
+4. Business Model Canvas: all nine blocks, including a named Unique Mechanism, a
+   named conditional Guarantee, MVP milestones, market message plus two variations,
+   channels, anchor pricing, and delivery.
+5. 40-Day Growth Plan: situation read, the big decision (what to build first), four
+   ten-day sprints (Foundation, Proof & Content, Traffic On, Convert & Scale), quick
+   wins, and what to measure.
+6. Quality review: a sign-off pass that checks the whole pack for consistency,
+   completeness, and style, and returns one corrected, client-ready markdown pack.
+7. Visual designer: builds the single-page visual report (matching
+   `visual-report-template.html` exactly) plus the BMC and Empathy Map diagrams.
+
+The methodology encoded throughout is the UAbility / HSIM model: Big Domino problem,
+Kano UVP (Must-Haves, Performance, Delighters), a named Unique Mechanism, a named
+Guarantee, the Island 1 to Island 2 MVP with milestones, the market-message template,
+channels, anchor pricing, and delivery.
+
+---
+
+## 3. Files in this repo
+
+- `index.html`, the dashboard page (settings, form, progress, results, history).
+- `style.css`, the dashboard styling (dark theme, stat cards, timeline, tables).
+- `pipeline.js`, the whole pipeline: OpenRouter calls, the seven agent prompts, the
+  usage tally, and assembly of the reports and diagrams.
+- `app.js`, the UI logic: saving the key and model to localStorage, the live timer,
+  the run flow, rendering the usage panel, the per-project history, and all downloads.
+- `visual-report-template.html`, the proven single-page report design the output
+  copies exactly (only the content changes each run).
+- `README.md`, this document.
+- `DEPLOY-GitHub-Pages-Hinglish.md`, a short deploy guide in Hinglish.
+- `LICENSE`, MIT.
+- `.gitignore`, keeps `.DS_Store`, `.env`, and key files out of the repo.
+
+---
+
+## 4. Settings (in the dashboard)
+
+- OpenRouter API key: get one at https://openrouter.ai/keys. Stored only in your
+  browser.
+- Model: pick from the list or type a custom model id. Suggestions:
+  - `anthropic/claude-sonnet-5`, the recommended default: strong writing and reliable
+    on the big HTML design step, at a sensible price.
+  - `anthropic/claude-opus-5`, best quality, and the most expensive.
+  - `openai/gpt-5.6-terra`, strong, mid price.
+  - `google/gemini-3.5-flash`, fast and cheap.
+  - `google/gemini-3.5-flash-lite`, the cheapest paid option.
+  - `nvidia/nemotron-3-ultra-550b-a55b:free`, free but rate-limited and weaker at the
+    final HTML design step.
+
+  Any model id from https://openrouter.ai/models works in the custom box. If you have
+  an older version of this app saved in your browser, a retired model id is migrated
+  to its current equivalent automatically.
+- Use live web search (:online): adds OpenRouter web search to the research stages
+  for current data. Turn it off to save cost if you do not need fresh research.
+
+---
+
+## 5. How to use
+
+1. Open the app.
+2. Open Settings, paste your OpenRouter key, pick a model, and save.
+3. Enter a business (link, name, niche, or idea), choose English or Hinglish, and an
+   optional byline.
+4. Click Run deep research and keep the tab open.
+5. When it finishes, view the report in the page, check the usage panel, and use the
+   download buttons.
+
+---
+
+## 6. Cost, tokens, and usage tracking
+
+Each model call asks OpenRouter to return token counts and cost (`usage: {include:
+true}`). The app adds these up for the run and shows: time taken, cost, input tokens,
+output tokens, total tokens, and the number of AI calls. Every run is also saved to a
+local history so you can see averages and total spend per project over time.
+
+You can also see the same data in your OpenRouter account:
+- Activity, every call with tokens and cost: https://openrouter.ai/activity
+- Credits and balance: https://openrouter.ai/credits
+
+Cost depends on the model. Claude Sonnet is the most expensive; GPT-4o mini and
+Gemini Flash are cheap; free models cost nothing but are rate-limited.
+
+---
+
+## 7. Deploy on GitHub Pages (free)
+
+1. Create an OpenRouter key at https://openrouter.ai/keys
+2. Put all files in a GitHub repository (at the repo root).
+3. Repo, Settings, Pages, Source "Deploy from a branch", Branch `main`, folder
+   `/root`, Save.
+4. After 1 to 2 minutes the app is live at
+   `https://<your-username>.github.io/<repo-name>/`.
+
+### Run locally
+Because the app fetches `visual-report-template.html`, use a small local server (do
+not just double-click the file):
 ```
-cd business-model-builder-openrouter
 python3 -m http.server 8000
 ```
 Then open http://localhost:8000
 
-## Model notes
-- Best quality: `anthropic/claude-3.5-sonnet` or `openai/gpt-4o-mini` (paid, cheap).
-- Free models (for example `meta-llama/llama-3.3-70b-instruct:free`) work but are
-  rate-limited and weaker at the final HTML design step.
-- "Use live web search (:online)" adds OpenRouter web search to the research stages
-  for current data. Turn it off to save cost if you do not need fresh research.
+---
 
-## Cost and time
-A full run makes about 8 model calls and takes roughly 15 to 30 minutes. Keep the tab
-open. Watch usage in your OpenRouter dashboard.
+## 8. Update the live site (git)
+
+After changing any file:
+```
+git add .
+git commit -m "your message"
+git push
+```
+GitHub Pages rebuilds in 1 to 2 minutes.
+
+---
+
+## 9. Privacy and safety
+
+The OpenRouter key lives only in your browser and is never stored in the repo. If you
+share the site publicly, each visitor enters their own key. Research runs make calls
+to OpenRouter (and to the web search provider when :online is on).
+
+Two things guard the key, because the research stages read live web pages and anything
+found there is untrusted:
+
+- The report preview iframe is sandboxed without `allow-same-origin`, so scripts in the
+  generated HTML run in an opaque origin and cannot read this page's localStorage.
+- The research prompts state that scraped pages are source material, never instructions,
+  so text on a competitor's page cannot redirect the run.
+
+The generated reports are also told to stay fully self-contained, with no external
+scripts, fonts, images, or network calls, so a downloaded report phones nobody.
+
+---
+
+## 10. Troubleshooting
+
+- 401 Unauthorized: the OpenRouter key is missing or wrong. Re-enter it in Settings.
+- 402 Payment required: add credit to your OpenRouter account for that model.
+- 429 Too many requests: rate limit hit (common on free models). Wait a minute and
+  run again, or switch to a paid model.
+- 404 on the model: that model id does not exist on OpenRouter. Check it against
+  https://openrouter.ai/models
+- PDF button does nothing: allow popups for the site, then click again.
+- The run stops if you close the tab. Keep it open. Whatever finished is saved, and a
+  banner above the Run button offers to carry on when you run the same business again.
+- A run failed halfway and you want a clean start: use "Discard saved progress" in
+  that banner.
+- Weak or broken visual layout: use a stronger model (Claude or GPT) for the design
+  step; free models sometimes struggle with the full HTML template.
+
+---
+
+## 11. Customization
+
+- Report design: edit `visual-report-template.html`. The output copies its style.
+- Models and defaults: edit the options in `index.html`, and `DEFAULT_MODEL` in `app.js`.
+- Prompts and methodology: edit the `P` object and `METHOD` text in `pipeline.js`.
+- Timeouts and retries: `CALL_TIMEOUT_MS`, `MAX_ATTEMPTS`, and `MAX_CONTINUES` at the
+  top of `pipeline.js`.
+- Dashboard colours: the `:root` variables at the top of `style.css`.
+
+---
+
+## 12. Limitations
+
+- Runs in a single browser tab; long runs need the tab to stay open. Closing it does
+  not lose finished steps, but the remaining ones stop until you run again.
+- Quality tracks the chosen model. For client work, use a strong paid model.
+- Free-tier models on OpenRouter are rate-limited and can fail mid-run.
+- The Word download is HTML saved as `.doc`; it opens cleanly in Word and Google
+  Docs but is not a native `.docx`.
+- Usage history and checkpoints live in this browser's localStorage. They do not sync
+  between devices or browsers, and clearing site data removes them.
+- Cost is what OpenRouter reports per call. Web search (`:online`) is billed by
+  OpenRouter as part of the call, so the totals include it.
+
+---
+
+## 13. License
+
+MIT. See `LICENSE`.

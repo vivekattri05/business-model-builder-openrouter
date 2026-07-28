@@ -27,10 +27,12 @@
       <label class="field">
         <span>Model</span>
         <select id="model">
-          <option value="anthropic/claude-3.5-sonnet">Claude 3.5 Sonnet (best quality, paid)</option>
-          <option value="openai/gpt-4o-mini">GPT-4o mini (cheap, good)</option>
-          <option value="google/gemini-2.0-flash-001">Gemini 2.0 Flash (cheap)</option>
-          <option value="meta-llama/llama-3.3-70b-instruct:free">Llama 3.3 70B (free, limited)</option>
+          <option value="anthropic/claude-sonnet-5">Claude Sonnet 5 (recommended)</option>
+          <option value="anthropic/claude-opus-5">Claude Opus 5 (best quality, priciest)</option>
+          <option value="openai/gpt-5.6-terra">GPT-5.6 Terra (strong, mid price)</option>
+          <option value="google/gemini-3.5-flash">Gemini 3.5 Flash (fast, cheap)</option>
+          <option value="google/gemini-3.5-flash-lite">Gemini 3.5 Flash Lite (cheapest paid)</option>
+          <option value="nvidia/nemotron-3-ultra-550b-a55b:free">Nemotron 3 Ultra (free, rate-limited)</option>
           <option value="__custom__">Custom (type below)</option>
         </select>
       </label>
@@ -64,14 +66,16 @@
         <input type="text" id="byline" placeholder="Your agency or consultant name">
       </label>
     </div>
+    <div id="resume" class="resume" style="display:none"></div>
     <button id="runBtn" class="btn" type="button">Run deep research</button>
-    <p class="note">A full run makes several AI calls and can take 15 to 30 minutes. Keep this tab open.</p>
+    <p class="note">A full run makes several AI calls and can take 15 to 30 minutes. Keep this tab open. Progress is saved as it goes, so if a run fails or the tab reloads, running the same business again picks up where it stopped.</p>
     <div id="formError" class="alert" style="display:none"></div>
   </section>
 
   <!-- Progress -->
   <section id="progress" class="card" style="display:none">
     <h2>Working on your strategy pack</h2>
+    <div id="elapsed" class="elapsed">Elapsed: 0:00</div>
     <ul id="stages" class="stages"></ul>
     <div id="runError" class="alert" style="display:none"></div>
   </section>
@@ -81,6 +85,7 @@
     <div class="results-head">
       <h2>Your strategy pack is ready</h2>
     </div>
+    <div id="usage" class="usage"></div>
     <div class="downloads">
       <strong>Download:</strong>
       <button data-dl="html" class="ghost-btn" type="button">Visual report (HTML)</button>
@@ -95,7 +100,19 @@
       <button class="tab" data-view="bmc" type="button">BMC Diagram</button>
       <button class="tab" data-view="emc" type="button">Empathy Map</button>
     </div>
-    <iframe id="viewer" class="viewer" title="Report preview"></iframe>
+    <!-- sandbox without allow-same-origin: the preview runs in an opaque origin, so
+         the generated report's scripts cannot reach this page's localStorage (where
+         the API key lives). allow-scripts is needed for the Kano table script. -->
+    <iframe id="viewer" class="viewer" title="Report preview"
+            sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox"
+            referrerpolicy="no-referrer"></iframe>
+  </section>
+
+  <!-- Usage & timing history -->
+  <section id="historyCard" class="card">
+    <h2>Usage &amp; timing</h2>
+    <div id="avg" class="avg"></div>
+    <div id="history" class="history"></div>
   </section>
 
 </main>
