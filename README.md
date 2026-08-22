@@ -49,6 +49,14 @@ consultant name) that appears on the report.
   report, both diagrams, and the markdown pack, alongside its stats. localStorage
   alone would not hold this (it caps out around 5 to 10MB, and a single report can run
   past 100KB); IndexedDB has far more room, and nothing is capped or auto-deleted.
+- Every content-generating prompt carries a niche lock: it must name the business's
+  real, specific category up front and ground every fact, mechanism, and competitor in
+  it. This exists because the single most common failure in this kind of pipeline is a
+  model quietly defaulting to the most familiar shape in its training data (an SEO or
+  digital-marketing content business, complete with Google algorithm updates, GA4,
+  Ahrefs/Moz, and "client" framing) for a business that has nothing to do with SEO. The
+  quality reviewer stage also runs an explicit pass hunting for and fixing exactly this
+  kind of industry drift.
 - Failed calls are retried up to four times with exponential backoff, and each call is
   abandoned after five minutes rather than hanging forever.
 - The report preview renders in a sandboxed iframe with no same-origin access, so the
@@ -123,6 +131,11 @@ channels, anchor pricing, and delivery.
   to its current equivalent automatically.
 - Use live web search (:online): adds OpenRouter web search to the research stages
   for current data. Turn it off to save cost if you do not need fresh research.
+- Extra info you already know (optional, in the form, not Settings): anything you
+  already know about the business, location, size, real competitors, whatever is
+  relevant, given to every stage as ground truth. Especially useful for a small,
+  niche, or lesser-known business that the web does not have much written about, where
+  a model is otherwise most likely to fall back on a generic, wrong industry template.
 
 ---
 

@@ -22,9 +22,10 @@ a{color:var(--accent)}
 .field{display:block;margin-bottom:16px}
 .field>span{display:block;font-weight:600;margin-bottom:7px;font-size:14px}
 .field>span em{color:var(--muted);font-weight:400;font-style:normal}
-input[type=text],input[type=password],select{width:100%;padding:12px 13px;border-radius:10px;
+input[type=text],input[type=password],select,textarea{width:100%;padding:12px 13px;border-radius:10px;
   border:1px solid var(--line);background:var(--panel2);color:var(--ink);font-size:14.5px;outline:none}
-input:focus,select:focus{border-color:var(--accent)}
+textarea{font-family:inherit;resize:vertical;line-height:1.5}
+input:focus,select:focus,textarea:focus{border-color:var(--accent)}
 .field small{display:block;color:var(--muted);margin-top:6px;font-size:12px}
 .row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 @media(max-width:640px){.row{grid-template-columns:1fr}}

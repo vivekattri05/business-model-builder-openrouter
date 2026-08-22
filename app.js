@@ -209,6 +209,7 @@
       input: business,
       language: document.querySelector('input[name="lang"]:checked').value,
       brand: $("byline").value.trim(),
+      extra: $("extraInfo").value.trim(),
     };
     const cfg = { apiKey, model, online: $("online").checked };
     RUN_NAME = business;

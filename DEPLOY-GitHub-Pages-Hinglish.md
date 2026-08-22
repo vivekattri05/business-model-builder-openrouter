@@ -33,6 +33,9 @@ jaati hain.
    aage se aapka default ban jayega. (Balance ke liye Claude Sonnet 5, sabse best
    ke liye Claude Opus 5, saste ke liye Gemini 3.5 Flash ya GPT-5.6 Luna.)
 3. Business daalo (jaise `seohub.ae`), English/Hinglish chuno, byline (optional).
+   Agar business ke baare mein kuch pehle se pata hai (location, kitne customers,
+   real competitor, wagairah), toh "Extra info" box mein likh do, isse research
+   zyada accurate hoti hai, khaaskar kam-known business ke liye.
 4. **Run deep research** dabao. Tab **khula rakhna**. 15 se 30 min mein visual report
    usi page pe aa jaayega, saath mein download buttons (HTML, PDF, Word, diagrams).
 
