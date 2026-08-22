@@ -4,7 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Business Model Builder</title>
-<link rel="stylesheet" href="style.css">
+<!-- bump the ?v= number on style.css/app.js/pipeline.js below whenever any of
+     them changes, so a browser that cached the old file picks up the new one
+     right away instead of waiting out the 10-minute cache-control window -->
+<link rel="stylesheet" href="style.css?v=2">
 </head>
 <body>
 
@@ -129,7 +132,7 @@
 
 <footer class="foot">Runs entirely in your browser via OpenRouter. Your key stays local.</footer>
 
-<script src="pipeline.js"></script>
-<script src="app.js"></script>
+<script src="pipeline.js?v=2"></script>
+<script src="app.js?v=2"></script>
 </body>
 </html>
