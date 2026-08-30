@@ -24,6 +24,12 @@ Live app pattern: `https://<your-username>.github.io/<repo-name>/`
   not lose it. Each entry has a View button (reopens it in the results viewer, with its
   own downloads) and a Delete button, plus averages across everything you have run
   (projects run, average time, average cost, total spent).
+- Light or dark theme, a toggle in the top bar. It defaults to your system's
+  preference and remembers whatever you pick after that.
+- A named team, not a plain progress bar. Boss opens a run by handing out the work,
+  each stage shows the actual team member working on it (with an animated status
+  line), and Boss gives the final sign-off before the designer's pass. When nothing
+  is running, a "Meet the team" card explains who does what.
 
 All output is white-label: no AI or tool mentions, and no em dashes, so it reads as
 your own work. You choose English or Hinglish, and an optional byline (your agency or
@@ -94,12 +100,15 @@ channels, anchor pricing, and delivery.
 
 ## 3. Files in this repo
 
-- `index.html`, the dashboard page (settings, form, progress, results, history).
-- `style.css`, the dashboard styling (dark theme, stat cards, timeline, tables).
-- `pipeline.js`, the whole pipeline: OpenRouter calls, the seven agent prompts, the
-  usage tally, and assembly of the reports and diagrams.
-- `app.js`, the UI logic: saving the key and model to localStorage, the live timer,
-  the run flow, rendering the usage panel, the per-project history, and all downloads.
+- `index.html`, the dashboard page (settings, form, team roster, progress, results,
+  project library).
+- `style.css`, the dashboard styling: light and dark theme variables, stat cards,
+  agent cards, timeline, tables.
+- `pipeline.js`, the whole pipeline: OpenRouter calls, the seven agent prompts (with
+  the niche lock), the usage tally, and assembly of the reports and diagrams.
+- `app.js`, the UI logic: the theme toggle, saving the key and model to localStorage,
+  the live timer, the named-agent progress animation, the run flow, rendering the
+  usage panel, the project library, and all downloads.
 - `visual-report-template.html`, the proven single-page report design the output
   copies exactly (only the content changes each run).
 - `README.md`, this document.
@@ -139,7 +148,33 @@ channels, anchor pricing, and delivery.
 
 ---
 
-## 5. How to use
+## 5. The team
+
+Progress is shown as a named team rather than a plain percentage bar. Each real agent
+call in `pipeline.js` has a persona in `app.js` (in the `TEAM` object):
+
+| Persona | Role | Does |
+|---|---|---|
+| Boss | Team lead & sign-off | Hands out the work at the start, and gives the final quality sign-off before the designer's pass. |
+| Chhotu | Researcher | Researches the business and market. |
+| Didi | Customer empathy | Builds the empathy map from the research. |
+| Munna Bhai | Competitor intel | Researches competitors and builds the Kano matrix, at the same time as Didi. |
+| Guruji | Business strategist | Writes the Business Model Canvas. |
+| Tez Bhai | Growth strategist | Writes the 40-day growth plan. |
+| Kalakar | Designer | Builds the visual report and the two diagrams. |
+
+While a run is in progress, each stage shows whichever team member is actually working
+on it, with a small animated status line; a stage with two people working at once (Didi
+and Munna Bhai) shows both. When nothing is running, a "Meet the team" card lower on
+the page explains each person's role instead.
+
+To change the names, roles, or duty text, edit the `TEAM` object near the top of
+`app.js`; `STAGE_TEAM` controls which persona (and status line) shows on each of the
+six progress stages.
+
+---
+
+## 6. How to use
 
 1. Open the app.
 2. Open Settings, paste your OpenRouter key, pick a model, and save.
@@ -151,7 +186,7 @@ channels, anchor pricing, and delivery.
 
 ---
 
-## 6. Cost, tokens, and usage tracking
+## 7. Cost, tokens, and usage tracking
 
 Each model call asks OpenRouter to return token counts and cost (`usage: {include:
 true}`). The app adds these up for the run and shows: time taken, cost, input tokens,
@@ -169,7 +204,7 @@ nothing but are rate-limited.
 
 ---
 
-## 7. Deploy on GitHub Pages (free)
+## 8. Deploy on GitHub Pages (free)
 
 1. Create an OpenRouter key at https://openrouter.ai/keys
 2. Put all files in a GitHub repository (at the repo root).
@@ -188,7 +223,7 @@ Then open http://localhost:8000
 
 ---
 
-## 8. Update the live site (git)
+## 9. Update the live site (git)
 
 After changing any file:
 ```
@@ -200,7 +235,7 @@ GitHub Pages rebuilds in 1 to 2 minutes.
 
 ---
 
-## 9. Privacy and safety
+## 10. Privacy and safety
 
 The OpenRouter key lives only in your browser and is never stored in the repo. If you
 share the site publicly, each visitor enters their own key. Research runs make calls
@@ -219,7 +254,7 @@ scripts, fonts, images, or network calls, so a downloaded report phones nobody.
 
 ---
 
-## 10. Troubleshooting
+## 11. Troubleshooting
 
 - 401 Unauthorized: the OpenRouter key is missing or wrong. Re-enter it in Settings.
 - 402 Payment required: add credit to your OpenRouter account for that model.
@@ -237,7 +272,7 @@ scripts, fonts, images, or network calls, so a downloaded report phones nobody.
 
 ---
 
-## 11. Customization
+## 12. Customization
 
 - Report design: edit `visual-report-template.html`. The output copies its style.
 - Models: edit the options in `index.html`. To preselect one for everybody, set
@@ -245,11 +280,14 @@ scripts, fonts, images, or network calls, so a downloaded report phones nobody.
 - Prompts and methodology: edit the `P` object and `METHOD` text in `pipeline.js`.
 - Timeouts and retries: `CALL_TIMEOUT_MS`, `MAX_ATTEMPTS`, and `MAX_CONTINUES` at the
   top of `pipeline.js`.
-- Dashboard colours: the `:root` variables at the top of `style.css`.
+- Dashboard colours: the `:root` and `:root[data-theme="light"]` variables at the
+  top of `style.css`. Keep both blocks in sync when changing a colour, or the two
+  themes will drift apart.
+- The team: see section 5.
 
 ---
 
-## 12. Limitations
+## 13. Limitations
 
 - Runs in a single browser tab; long runs need the tab to stay open. Closing it does
   not lose finished steps, but the remaining ones stop until you run again.
@@ -267,6 +305,6 @@ scripts, fonts, images, or network calls, so a downloaded report phones nobody.
 
 ---
 
-## 13. License
+## 14. License
 
 MIT. See `LICENSE`.

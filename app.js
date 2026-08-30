@@ -6,6 +6,25 @@
     set: (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} },
   };
 
+  // ---- theme (light / dark) ----
+  // No theme is forced: an explicit choice is remembered; before any choice is
+  // made, the OS-level light/dark preference decides, same spirit as the model
+  // picker having no forced default.
+  function applyTheme(t) {
+    document.documentElement.setAttribute("data-theme", t);
+    $("themeToggle").textContent = t === "light" ? "☀️ Light" : "🌙 Dark";
+  }
+  let theme = LS.get("bmb_theme", "");
+  if (theme !== "light" && theme !== "dark") {
+    theme = (window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches) ? "light" : "dark";
+  }
+  applyTheme(theme);
+  $("themeToggle").addEventListener("click", () => {
+    theme = theme === "light" ? "dark" : "light";
+    LS.set("bmb_theme", theme);
+    applyTheme(theme);
+  });
+
   // ---- storage: IndexedDB holds every finished project in full (report,
   // diagrams, markdown pack), not just its stats. localStorage tops out around
   // 5 to 10MB and one report can run past 100KB, so the settings above stay in
@@ -157,16 +176,71 @@
   }
   function stopTimer() { if (timerInt) { clearInterval(timerInt); timerInt = null; } return (Date.now() - startMs) / 1000; }
 
+  // ---- the team: one persona per real agent call, so a run reads like a
+  // small team working, not a progress bar. Boss opens the run (kickoff line
+  // in the HTML) and closes it (the quality sign-off stage).
+  const TEAM = {
+    boss:       { name: "Boss",       emoji: "🧑‍💼", role: "Team Lead & Sign-off", duty: "Kaam sabko baantta hai, aur sabse aakhir mein poora pack check karke client-ready sign-off deta hai." },
+    researcher: { name: "Chhotu",     emoji: "🔍", role: "Researcher",          duty: "Business, market, aur niche ko khud khangaal ke research brief laata hai." },
+    empathy:    { name: "Didi",       emoji: "💬", role: "Customer Empathy",    duty: "Customer ke dimaag mein ghuskar unki asli soch, dard, aur zaroorat nikalti hai." },
+    competitor: { name: "Munna Bhai", emoji: "🕵️", role: "Competitor Intel",    duty: "Saare competitors ki khabar rakhta hai, kaun kya de raha hai, kahan gap hai." },
+    bmc:        { name: "Guruji",     emoji: "📐", role: "Business Strategist", duty: "Research aur Didi/Munna Bhai ka kaam padh kar poora Business Model Canvas banate hain." },
+    growth:     { name: "Tez Bhai",   emoji: "🚀", role: "Growth Strategist",   duty: "Guruji ke plan par 40-din ka action plan banata hai, pehle kya karna hai decide karta hai." },
+    designer:   { name: "Kalakar",    emoji: "🎨", role: "Designer",            duty: "Boss ke sign-off ke baad sabka kaam ek sundar visual report aur diagrams mein badal deta hai." },
+  };
+  // Which team member(s) are on each of the six progress stages, and what
+  // they are actually doing right now. Index 1 has two people because the
+  // empathy map and competitor research really do run at the same time.
+  const STAGE_TEAM = [
+    [{ key: "researcher", verb: "business aur market ko khangaal raha hai" }],
+    [
+      { key: "empathy", verb: "customer ka man padh rahi hai" },
+      { key: "competitor", verb: "competitors ki recce kar raha hai" },
+    ],
+    [{ key: "bmc", verb: "Business Model Canvas likh rahe hain" }],
+    [{ key: "growth", verb: "40-din ka growth plan bana raha hai" }],
+    [{ key: "boss", verb: "poora kaam check karke sign-off de rahe hain" }],
+    [{ key: "designer", verb: "visual report aur diagrams design kar raha hai" }],
+  ];
+
   function renderStages(cur, allDone) {
     const ul = $("stages"); ul.innerHTML = "";
     window.BMB.STAGES.forEach((label, i) => {
-      const li = document.createElement("li");
       let state = "pending";
       if (allDone || i < cur) state = "done"; else if (i === cur) state = "active";
+      const li = document.createElement("li");
       li.className = "stage " + state;
-      li.innerHTML = '<span class="dot"></span><span>' + label + "</span>";
+      const agentsHTML = (STAGE_TEAM[i] || []).map((slot) => {
+        const m = TEAM[slot.key];
+        return '<div class="agent">' +
+          '<span class="agent-avatar">' + m.emoji + '</span>' +
+          '<div class="agent-info">' +
+            '<div class="agent-name">' + m.name + '<span class="agent-role">' + m.role + '</span></div>' +
+            '<div class="agent-verb">' + m.name + ' ' + slot.verb +
+              (state === "active" ? '<span class="dots"><span></span><span></span><span></span></span>' : "") +
+            "</div>" +
+          "</div>" +
+          (state === "done" ? '<span class="agent-check">✓</span>' : "") +
+        "</div>";
+      }).join("");
+      li.innerHTML = '<div class="stage-label">' + label + '</div><div class="stage-agents">' + agentsHTML + "</div>";
       ul.appendChild(li);
     });
+  }
+
+  // ---- the idle team card: who is on the team and what they each do,
+  // shown whenever a run is not actively in progress ----
+  function renderTeam() {
+    const order = ["boss", "researcher", "empathy", "competitor", "bmc", "growth", "designer"];
+    $("teamGrid").innerHTML = order.map((k) => {
+      const m = TEAM[k];
+      return '<div class="team-member">' +
+        '<div class="team-avatar">' + m.emoji + '</div>' +
+        '<div class="team-name">' + m.name + '</div>' +
+        '<div class="team-role">' + m.role + '</div>' +
+        '<div class="team-duty">' + m.duty + '</div>' +
+      '</div>';
+    }).join("");
   }
 
   let RESULT = null;
@@ -216,6 +290,7 @@
 
     $("runBtn").disabled = true;
     $("results").style.display = "none";
+    $("teamCard").style.display = "none";
     $("progress").style.display = "block";
     $("runError").style.display = "none";
     renderStages(0, false);
@@ -235,6 +310,7 @@
       re.style.display = "block";
       re.textContent = "Something went wrong: " + msg + "\n\n" + hint(msg) +
         "\n\nThe steps that finished are saved. Running the same business again resumes from there.";
+      $("teamCard").style.display = "block";
     } finally {
       $("runBtn").disabled = false;
       renderResume();
@@ -269,6 +345,7 @@
   function showResults() {
     $("progress").style.display = "none";
     $("results").style.display = "block";
+    $("teamCard").style.display = "block";
     renderUsage(RESULT.usage, RESULT._seconds);
     setView("report");
     document.querySelectorAll(".tab").forEach((t) => {
@@ -389,6 +466,7 @@
   }
 
   // initial render
+  renderTeam();
   migrateOldHistory().then(renderHistory);
   renderResume();
 })();

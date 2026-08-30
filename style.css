@@ -1,22 +1,32 @@
 :root{
+  /* dark theme (default) */
   --bg:#0b1020; --panel:#141a2e; --panel2:#1b2440; --ink:#e8ecf5; --muted:#9aa6c2;
   --line:#28324f; --accent:#6d8bff; --accent2:#8a6dff; --good:#37d19a; --bad:#ff6b6b;
+  --bg-glow:#1a2547; --panel-end:#111730; --topbar-bg:rgba(10,15,32,.7);
+  --accent-rgb:109,139,255; --bad-rgb:255,107,107; --tab-active-color:#fff;
   --radius:14px;
+}
+:root[data-theme="light"]{
+  --bg:#f3f5fa; --panel:#ffffff; --panel2:#f1f3f9; --ink:#1b2333; --muted:#5c6577;
+  --line:#e1e5ee; --accent:#4b63d6; --accent2:#7550c9; --good:#1c8f57; --bad:#d1483f;
+  --bg-glow:#e3e8fb; --panel-end:#eaeef8; --topbar-bg:rgba(255,255,255,.75);
+  --accent-rgb:75,99,214; --bad-rgb:209,72,63; --tab-active-color:var(--ink);
 }
 *{box-sizing:border-box}
 html,body{margin:0;padding:0}
 body{
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-  background:radial-gradient(1200px 600px at 70% -10%,#1a2547 0%,var(--bg) 55%);
+  background:radial-gradient(1200px 600px at 70% -10%,var(--bg-glow) 0%,var(--bg) 55%);
   color:var(--ink); min-height:100vh; line-height:1.55;
 }
 a{color:var(--accent)}
 .topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;
-  border-bottom:1px solid var(--line);position:sticky;top:0;background:rgba(10,15,32,.7);
+  border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--topbar-bg);
   backdrop-filter:blur(8px);z-index:5}
 .brand{font-weight:700;font-size:18px}
+.topbar-actions{display:flex;gap:8px;align-items:center}
 .wrap{max-width:900px;margin:0 auto;padding:26px 20px 70px}
-.card{background:linear-gradient(180deg,var(--panel),#111730);border:1px solid var(--line);
+.card{background:linear-gradient(180deg,var(--panel),var(--panel-end));border:1px solid var(--line);
   border-radius:var(--radius);padding:22px 24px;box-shadow:0 20px 60px rgba(0,0,0,.35);margin-bottom:20px}
 .card h2{margin:0 0 16px;font-size:18px}
 .field{display:block;margin-bottom:16px}
@@ -39,17 +49,44 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent)}
   padding:9px 14px;border-radius:9px;font-size:13.5px}
 .ghost-btn:hover{border-color:var(--accent)}
 .note{color:var(--muted);font-size:12px;margin:12px 0 0}
-.alert{background:rgba(255,107,107,.12);border:1px solid rgba(255,107,107,.4);color:#ffd4d4;
+.alert{background:rgba(var(--bad-rgb),.12);border:1px solid rgba(var(--bad-rgb),.4);color:var(--bad);
   padding:11px 14px;border-radius:10px;margin-top:14px;font-size:13.5px;white-space:pre-wrap;word-break:break-word}
 .foot{color:var(--muted);text-align:center;padding:24px;font-size:12px}
-/* progress */
-.stages{list-style:none;margin:8px 0 0;padding:0}
-.stage{display:flex;align-items:center;gap:12px;padding:10px 0;color:var(--muted)}
-.stage .dot{width:12px;height:12px;border-radius:50%;background:var(--line);flex:0 0 auto}
-.stage.active{color:var(--ink)}
-.stage.active .dot{background:var(--accent);animation:pulse 1.4s infinite}
-.stage.done{color:var(--ink)}.stage.done .dot{background:var(--good)}
-@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(109,139,255,.35)}70%{box-shadow:0 0 0 8px rgba(109,139,255,0)}100%{box-shadow:0 0 0 0 rgba(109,139,255,0)}}
+/* progress: a kickoff line, then one row per stage, each holding one or two
+   agent cards (a stage with parallel work, like empathy + competitor, shows
+   both agents active together, since that is genuinely what is happening) */
+.kickoff{background:var(--panel2);border:1px solid var(--line);border-radius:10px;
+  padding:11px 14px;font-size:13.5px;margin:0 0 16px;color:var(--muted)}
+.kickoff strong{color:var(--ink)}
+.stages{list-style:none;margin:0;padding:0}
+.stage{padding:12px 0}
+.stage:not(:last-child){border-bottom:1px solid var(--line)}
+.stage-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:9px}
+.stage-agents{display:flex;flex-direction:column;gap:8px}
+.agent{display:flex;align-items:center;gap:11px;padding:9px 12px;border-radius:10px;
+  background:var(--panel2);border:1px solid var(--line);opacity:.5;
+  transition:opacity .3s ease,border-color .3s ease}
+.stage.done .agent{opacity:1}
+.stage.active .agent{opacity:1;border-color:var(--accent);animation:agentPulse 1.6s infinite}
+.agent-avatar{font-size:21px;line-height:1;flex:0 0 auto}
+.agent-info{flex:1 1 auto;min-width:0}
+.agent-name{font-weight:700;font-size:13.5px}
+.agent-role{color:var(--muted);font-weight:400;font-size:11px;margin-left:7px}
+.agent-verb{color:var(--muted);font-size:12.5px;margin-top:2px;display:flex;align-items:center;gap:7px}
+.agent-check{color:var(--good);font-weight:700;font-size:15px;flex:0 0 auto}
+.dots{display:inline-flex;gap:3px}
+.dots span{width:4px;height:4px;border-radius:50%;background:var(--accent);animation:dotBounce 1.2s infinite ease-in-out}
+.dots span:nth-child(2){animation-delay:.15s}
+.dots span:nth-child(3){animation-delay:.3s}
+@keyframes dotBounce{0%,80%,100%{transform:translateY(0);opacity:.4}40%{transform:translateY(-3px);opacity:1}}
+@keyframes agentPulse{0%{box-shadow:0 0 0 0 rgba(var(--accent-rgb),.35)}70%{box-shadow:0 0 0 6px rgba(var(--accent-rgb),0)}100%{box-shadow:0 0 0 0 rgba(var(--accent-rgb),0)}}
+/* team roster (shown whenever a run is not actively in progress) */
+.team-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
+.team-member{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:16px}
+.team-avatar{font-size:27px;margin-bottom:8px}
+.team-name{font-weight:700;font-size:15px}
+.team-role{color:var(--accent);font-size:12px;font-weight:600;margin:2px 0 8px}
+.team-duty{color:var(--muted);font-size:13px}
 /* results */
 .results-head{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
 .downloads{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:14px 0}
@@ -57,7 +94,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent)}
 .tabs{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 0;border-bottom:1px solid var(--line);padding-bottom:12px}
 .tab{background:var(--panel2);border:1px solid var(--line);color:var(--muted);padding:8px 13px;
   border-radius:9px;cursor:pointer;font-size:13.5px}
-.tab.active{color:#fff;border-color:var(--accent);background:rgba(109,139,255,.16)}
+.tab.active{color:var(--tab-active-color);border-color:var(--accent);background:rgba(var(--accent-rgb),.16)}
 .viewer{width:100%;height:75vh;border:1px solid var(--line);border-radius:10px;margin-top:14px;background:#fff}
 /* usage + timing */
 .elapsed{font-size:14px;color:var(--accent);font-weight:600;margin:0 0 12px}
@@ -73,12 +110,12 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent)}
 .hrow .hmeta{color:var(--muted);white-space:nowrap}
 .hactions{display:flex;gap:6px;align-items:center}
 .hactions .ghost-btn{padding:5px 10px;font-size:12px}
-.ghost-btn.danger{border-color:rgba(255,107,107,.35);color:#ffb3b3}
+.ghost-btn.danger{border-color:rgba(var(--bad-rgb),.35);color:var(--bad)}
 .ghost-btn.danger:hover{border-color:var(--bad)}
 .history-empty{color:var(--muted);font-size:13px}
 #historyCard .clear{margin-top:12px}
 @media(max-width:640px){.hrow{grid-template-columns:1fr;gap:6px}.hactions{justify-content:flex-start}}
 /* resume banner */
-.resume{background:rgba(109,139,255,.1);border:1px solid rgba(109,139,255,.4);border-radius:10px;
+.resume{background:rgba(var(--accent-rgb),.1);border:1px solid rgba(var(--accent-rgb),.4);border-radius:10px;
   padding:12px 14px;margin:0 0 14px;font-size:13.5px;display:flex;flex-wrap:wrap;gap:10px;
   align-items:center;justify-content:space-between}
