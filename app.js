@@ -182,9 +182,9 @@
   const TEAM = {
     boss:       { name: "Boss",       emoji: "🧑‍💼", role: "Team Lead & Sign-off", duty: "Kaam sabko baantta hai, aur sabse aakhir mein poora pack check karke client-ready sign-off deta hai." },
     researcher: { name: "Chhotu",     emoji: "🔍", role: "Researcher",          duty: "Business, market, aur niche ko khud khangaal ke research brief laata hai." },
-    empathy:    { name: "Didi",       emoji: "💬", role: "Customer Empathy",    duty: "Customer ke dimaag mein ghuskar unki asli soch, dard, aur zaroorat nikalti hai." },
+    empathy:    { name: "Nazar",      emoji: "👁️", role: "Customer Empathy",    duty: "Customer ke dimaag mein ghuskar unki asli soch, dard, aur zaroorat nikalti hai." },
     competitor: { name: "Munna Bhai", emoji: "🕵️", role: "Competitor Intel",    duty: "Saare competitors ki khabar rakhta hai, kaun kya de raha hai, kahan gap hai." },
-    bmc:        { name: "Guruji",     emoji: "📐", role: "Business Strategist", duty: "Research aur Didi/Munna Bhai ka kaam padh kar poora Business Model Canvas banate hain." },
+    bmc:        { name: "Guruji",     emoji: "📐", role: "Business Strategist", duty: "Research aur Nazar/Munna Bhai ka kaam padh kar poora Business Model Canvas banate hain." },
     growth:     { name: "Tez Bhai",   emoji: "🚀", role: "Growth Strategist",   duty: "Guruji ke plan par 40-din ka action plan banata hai, pehle kya karna hai decide karta hai." },
     designer:   { name: "Kalakar",    emoji: "🎨", role: "Designer",            duty: "Boss ke sign-off ke baad sabka kaam ek sundar visual report aur diagrams mein badal deta hai." },
   };

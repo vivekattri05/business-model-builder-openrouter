@@ -157,14 +157,14 @@ call in `pipeline.js` has a persona in `app.js` (in the `TEAM` object):
 |---|---|---|
 | Boss | Team lead & sign-off | Hands out the work at the start, and gives the final quality sign-off before the designer's pass. |
 | Chhotu | Researcher | Researches the business and market. |
-| Didi | Customer empathy | Builds the empathy map from the research. |
-| Munna Bhai | Competitor intel | Researches competitors and builds the Kano matrix, at the same time as Didi. |
+| Nazar | Customer empathy | Builds the empathy map from the research. |
+| Munna Bhai | Competitor intel | Researches competitors and builds the Kano matrix, at the same time as Nazar. |
 | Guruji | Business strategist | Writes the Business Model Canvas. |
 | Tez Bhai | Growth strategist | Writes the 40-day growth plan. |
 | Kalakar | Designer | Builds the visual report and the two diagrams. |
 
 While a run is in progress, each stage shows whichever team member is actually working
-on it, with a small animated status line; a stage with two people working at once (Didi
+on it, with a small animated status line; a stage with two people working at once (Nazar
 and Munna Bhai) shows both. When nothing is running, a "Meet the team" card lower on
 the page explains each person's role instead.
 
