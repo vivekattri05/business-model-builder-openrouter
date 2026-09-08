@@ -26,9 +26,9 @@ Live app pattern: `https://<your-username>.github.io/<repo-name>/`
   (projects run, average time, average cost, total spent).
 - Light or dark theme, a toggle in the top bar. It defaults to your system's
   preference and remembers whatever you pick after that.
-- A named team, not a plain progress bar. Boss opens a run by handing out the work,
+- A named team, not a plain progress bar. Vivek opens a run by handing out the work,
   each stage shows the actual team member working on it (with an animated status
-  line), and Boss gives the final sign-off before the designer's pass. When nothing
+  line), and Vivek gives the final sign-off before the designer's pass. When nothing
   is running, a "Meet the team" card explains who does what.
 
 All output is white-label: no AI or tool mentions, and no em dashes, so it reads as
@@ -155,17 +155,17 @@ call in `pipeline.js` has a persona in `app.js` (in the `TEAM` object):
 
 | Persona | Role | Does |
 |---|---|---|
-| Boss | Team lead & sign-off | Hands out the work at the start, and gives the final quality sign-off before the designer's pass. |
-| Chhotu | Researcher | Researches the business and market. |
-| Nazar | Customer empathy | Builds the empathy map from the research. |
-| Munna Bhai | Competitor intel | Researches competitors and builds the Kano matrix, at the same time as Nazar. |
-| Guruji | Business strategist | Writes the Business Model Canvas. |
-| Tez Bhai | Growth strategist | Writes the 40-day growth plan. |
-| Kalakar | Designer | Builds the visual report and the two diagrams. |
+| Vivek Attri | Team lead & sign-off | Hands out the work at the start, and gives the final quality sign-off before the designer's pass. |
+| Aditya Sharma | Researcher | Researches the business and market. |
+| Kavya Nair | Customer empathy | Builds the empathy map from the research. |
+| Siddharth Menon | Competitor intel | Researches competitors and builds the Kano matrix, at the same time as Kavya. |
+| Vikram Desai | Business strategist | Writes the Business Model Canvas. |
+| Neha Kapoor | Growth strategist | Writes the 40-day growth plan. |
+| Riya Chatterjee | Designer | Builds the visual report and the two diagrams. |
 
 While a run is in progress, each stage shows whichever team member is actually working
-on it, with a small animated status line; a stage with two people working at once (Nazar
-and Munna Bhai) shows both. When nothing is running, a "Meet the team" card lower on
+on it, with a small animated status line; a stage with two people working at once (Kavya
+and Siddharth) shows both. When nothing is running, a "Meet the team" card lower on
 the page explains each person's role instead.
 
 To change the names, roles, or duty text, edit the `TEAM` object near the top of

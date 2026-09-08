@@ -177,16 +177,16 @@
   function stopTimer() { if (timerInt) { clearInterval(timerInt); timerInt = null; } return (Date.now() - startMs) / 1000; }
 
   // ---- the team: one persona per real agent call, so a run reads like a
-  // small team working, not a progress bar. Boss opens the run (kickoff line
+  // small team working, not a progress bar. Vivek opens the run (kickoff line
   // in the HTML) and closes it (the quality sign-off stage).
   const TEAM = {
-    boss:       { name: "Boss",       emoji: "🧑‍💼", role: "Team Lead & Sign-off", duty: "Kaam sabko baantta hai, aur sabse aakhir mein poora pack check karke client-ready sign-off deta hai." },
-    researcher: { name: "Chhotu",     emoji: "🔍", role: "Researcher",          duty: "Business, market, aur niche ko khud khangaal ke research brief laata hai." },
-    empathy:    { name: "Nazar",      emoji: "👁️", role: "Customer Empathy",    duty: "Customer ke dimaag mein ghuskar unki asli soch, dard, aur zaroorat nikalti hai." },
-    competitor: { name: "Munna Bhai", emoji: "🕵️", role: "Competitor Intel",    duty: "Saare competitors ki khabar rakhta hai, kaun kya de raha hai, kahan gap hai." },
-    bmc:        { name: "Guruji",     emoji: "📐", role: "Business Strategist", duty: "Research aur Nazar/Munna Bhai ka kaam padh kar poora Business Model Canvas banate hain." },
-    growth:     { name: "Tez Bhai",   emoji: "🚀", role: "Growth Strategist",   duty: "Guruji ke plan par 40-din ka action plan banata hai, pehle kya karna hai decide karta hai." },
-    designer:   { name: "Kalakar",    emoji: "🎨", role: "Designer",            duty: "Boss ke sign-off ke baad sabka kaam ek sundar visual report aur diagrams mein badal deta hai." },
+    boss:       { name: "Vivek Attri", emoji: "🧑‍💼", role: "Team Lead & Sign-off", duty: "Kaam sabko baantta hai, aur sabse aakhir mein poora pack check karke client-ready sign-off deta hai." },
+    researcher: { name: "Aditya Sharma", emoji: "🔍", role: "Researcher",          duty: "Business, market, aur niche ko khud khangaal ke research brief laata hai." },
+    empathy:    { name: "Kavya Nair", emoji: "👁️", role: "Customer Empathy",    duty: "Customer ke dimaag mein ghuskar unki asli soch, dard, aur zaroorat nikalti hai." },
+    competitor: { name: "Siddharth Menon", emoji: "🕵️", role: "Competitor Intel",    duty: "Saare competitors ki khabar rakhta hai, kaun kya de raha hai, kahan gap hai." },
+    bmc:        { name: "Vikram Desai", emoji: "📐", role: "Business Strategist", duty: "Research aur Kavya/Siddharth ka kaam padh kar poora Business Model Canvas banate hain." },
+    growth:     { name: "Neha Kapoor",   emoji: "🚀", role: "Growth Strategist",   duty: "Vikram ke plan par 40-din ka action plan banata hai, pehle kya karna hai decide karta hai." },
+    designer:   { name: "Riya Chatterjee", emoji: "🎨", role: "Designer",            duty: "Vivek ke sign-off ke baad sabka kaam ek sundar visual report aur diagrams mein badal deta hai." },
   };
   // Which team member(s) are on each of the six progress stages, and what
   // they are actually doing right now. Index 1 has two people because the
