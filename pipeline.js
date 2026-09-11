@@ -77,6 +77,42 @@ real information on the business is thin, say so plainly and reason from what th
 input and genuine research actually support, rather than filling the gap with a
 familiar but wrong industry.`;
 
+  /* Sharpens the offer itself (UVP, Guarantee, Price) using Alex Hormozi's public
+     Grand Slam Offer framework, referenced by name so the model pulls a coherent,
+     well-formed pattern rather than a vague "make it punchier" instruction. Applied
+     to the BMC, which is where those blocks live. */
+  const HORMOZI_OFFER = `
+OFFER STYLE (Alex Hormozi's Grand Slam Offer thinking, apply to the UVP, Guarantee,
+and Price blocks): make the offer hard to say no to, on its own logic, not through
+hype.
+1. Value Equation: maximize the Dream Outcome (paint the exact end state, in numbers
+   where credible) and the Perceived Likelihood of Achievement (proof, specificity,
+   the guarantee itself), while minimizing Time Delay (the fastest realistic first
+   win, not a vague long-term promise) and Effort & Sacrifice (how little the buyer
+   has to do or change to get there).
+2. Guarantee: never a generic "satisfaction guarantee." Make it bold, named, and
+   conditional on a real outcome or timeline (performance-based, or stronger than a
+   plain refund where the business can credibly back it), the kind that removes
+   essentially all of the buyer's risk.
+3. Price: build it as a value stack. List everything included, each with its own
+   credible standalone value, add them up, then anchor the real price well below
+   that total. Use scarcity or urgency only if the business genuinely has it; never
+   invent fake scarcity.
+4. Language for these blocks: short, direct, confident sentences, concrete numbers
+   over vague adjectives, no hedging, no corporate softening. Say the bold thing
+   plainly, and back it with the specifics that make it credible, not just loud.`;
+
+  /* Sharpens niche selection and customer language using Hormozi's "starving crowd"
+     lens: real pain, real money, reachable, not a demographic description. Applied
+     to the BMC's Niche block and to the empathy map, where the customer's own words
+     are written down. */
+  const HORMOZI_NICHE = `
+STARVING CROWD (Alex Hormozi's niche-selection lens): the target is not a demographic
+description, it is a group that already has this exact problem badly, already has
+money to solve it, and is easy to reach. Write their pain and desire in the raw,
+specific, high-intensity words they would actually use when they are fed up and
+actively looking for a fix right now, never softened or generic.`;
+
   function langLine(language, brand) {
     const l = String(language || "").toLowerCase().startsWith("en")
       ? "Write everything in clean professional English."
@@ -207,15 +243,15 @@ familiar but wrong industry.`;
   const P = {
     research: (lg, br) => `You are a senior market-research strategist. Do real web research. ${langLine(lg, br)}${STYLE}${METHOD}${NICHE_LOCK}${UNTRUSTED}
 Deliver a dense, evidence-based brief: 1) The specific real-world category this business is in, one literal line, not a vague label, 2) Business summary, 3) Primary market (+why), 4) Niche + buyer floor + scorecard, 5) Demographics and psychographics + awareness level + market's vocabulary, 6) Big Domino Problem, 7) Smaller problems (5 to 8), 8) Real-life situations (5 to 8), 9) Validated pain evidence with links, 10) Starting competitor list (8 to 15, name + URL, each one a real business actually in this same category), 11) Sources.`,
-    empathy: (lg, br) => `You are a customer-psychology strategist. Using the research brief and real customer language, build a six-part Empathy Map. Stay strictly inside the category the research brief states; the customer here is whoever actually uses or buys from THIS business, not a stand-in from a more familiar industry. ${langLine(lg, br)}${STYLE}${NICHE_LOCK}${UNTRUSTED}
+    empathy: (lg, br) => `You are a customer-psychology strategist. Using the research brief and real customer language, build a six-part Empathy Map. Stay strictly inside the category the research brief states; the customer here is whoever actually uses or buys from THIS business, not a stand-in from a more familiar industry. ${langLine(lg, br)}${STYLE}${NICHE_LOCK}${HORMOZI_NICHE}${UNTRUSTED}
 Produce, in the customer's own voice (5 to 9 bullets each): Think & Feel, See, Hear, Say & Do, Pain, Gain. Then a Niche Archetype (1 to 2 paragraphs).`,
     competitor: (lg, br) => `You are a competitive-intelligence and offer strategist. Research live competitors. Never fabricate. Every competitor must be a real business or site that an actual customer of THIS business would genuinely consider as an alternative, in the same category the research brief states; before including one, check it actually competes there, not just that it is a well-known name in some other space. ${langLine(lg, br)}${STYLE}${METHOD}${NICHE_LOCK}${UNTRUSTED}
 Deliver: a Competitor Analysis with at least 10 competitors (each: name, URL, Kano breakdown of Must-Haves / Performance / Delighters, services, SEO audit relevant to this category), then a Gap Analysis (table-stakes, where competitors compete, open delighter gaps, SEO gaps), then a Sources list. Then on its own line output exactly ===KANO MATRIX=== followed by a markdown table: rows grouped by MUST-HAVES / PERFORMANCE / DELIGHTERS, columns = the 10 competitors + a final "Your Offer" column, cells = Yes / Partial / No, plus a website URL row, and a one-line Your Offer recommendation.`,
-    bmc: (lg, br) => `You are a business-model strategist. Write the full Business Model Canvas in the UAbility/HSIM format, specific to this business, from the research, empathy map, and competitor/Kano gap analysis given. The Unique Mechanism and Guarantee must be built from THIS business's real category and real problem, never borrowed wholesale from a different industry's well-known pattern. ${langLine(lg, br)}${STYLE}${METHOD}${NICHE_LOCK}
+    bmc: (lg, br) => `You are a business-model strategist. Write the full Business Model Canvas in the UAbility/HSIM format, specific to this business, from the research, empathy map, and competitor/Kano gap analysis given. The Unique Mechanism and Guarantee must be built from THIS business's real category and real problem, never borrowed wholesale from a different industry's well-known pattern. ${langLine(lg, br)}${STYLE}${METHOD}${NICHE_LOCK}${HORMOZI_OFFER}${HORMOZI_NICHE}
 Write all nine blocks with clear headings, including a named Unique Mechanism, a named conditional Guarantee, the MVP milestones, the market message + 2 variations, channels, anchor pricing, and delivery.`,
     growth: (lg, br) => `You are the decision-maker growth strategist. You have the full pack. Produce a concrete, opinionated, sequenced 40-day growth plan. ${langLine(lg, br)}${STYLE}${NICHE_LOCK}
 Deliver: 1) Situation read, 2) The big decision (what to build first and why), 3) The 40-day plan in four ten-day sprints (Foundation, Proof & Content, Traffic On, Convert & Scale) each with Goal, Tasks, Assets, Channel focus, Success metric, 4) Quick wins (first 48 hours), 5) What to measure.`,
-    qa: (lg, br) => `You are the quality reviewer, the sign-off before this pack goes to a client. You are given the five reports. Return ONE corrected, consistent, client-ready markdown document containing all of them, each as a titled section in this order: "# Executive Summary", "# Business Model Canvas", "# Empathy Map", "# Competitor Analysis", "# Kano Model Matrix", "# 40-Day Growth Plan". Fix inconsistencies (niche, market, Big Domino, Unique Mechanism, guarantee, pricing must agree everywhere), fill gaps, keep it specific not generic, keep the Kano matrix table, and enforce the style rules. ${langLine(lg, br)}${STYLE}
+    qa: (lg, br) => `You are the quality reviewer, the sign-off before this pack goes to a client. You are given the five reports. Return ONE corrected, consistent, client-ready markdown document containing all of them, each as a titled section in this order: "# Executive Summary", "# Business Model Canvas", "# Empathy Map", "# Competitor Analysis", "# Kano Model Matrix", "# 40-Day Growth Plan". Fix inconsistencies (niche, market, Big Domino, Unique Mechanism, guarantee, pricing must agree everywhere), fill gaps, keep it specific not generic, keep the Kano matrix table, and enforce the style rules. The Business Model Canvas and Empathy Map were written in a bold, specific, Hormozi-style Grand Slam Offer voice (a strong named guarantee, a value-stacked price, raw customer language); preserve that voice when fixing them, do not flatten it into generic, hedged, corporate language. ${langLine(lg, br)}${STYLE}
 INDUSTRY DRIFT CHECK (do this specifically, it is the most common defect to catch here): scan every section for vocabulary, tools, or a mechanism that belongs to a different industry than the one the research brief actually states. The most common drift is generic SEO or digital-marketing-agency language (Google algorithm updates, GA4, Search Console, Ahrefs, Moz, a "disavow" tool, SERP or algorithm volatility trackers, backlinks) or "client/boss" framing leaking into a business that has nothing to do with SEO or marketing. If you find any of that, rewrite the passage using real specifics from this business's actual category instead; do not leave it as a stray reference.
 Output only the corrected markdown document, nothing else.`,
     designer: (lg, br) => `You are a visual designer. You are given a proven HTML report TEMPLATE and the full strategy pack markdown. Produce ONE complete, self-contained HTML file that looks and behaves EXACTLY like the template, with this business's content instead of the example content. Copy the template's <style> verbatim. Replicate its structure: gradient header band, sticky nav, six numbered sections (Executive Summary, Business Model Canvas, Empathy Map, Competitor Analysis, Kano Model Matrix, 40-Day Growth Plan), footer, and the closing script. Rebuild the Kano rows JavaScript array and the thead competitor names from the real Kano matrix. Change the title, header business name, byline, and date. ${langLine(lg, br)}${STYLE}

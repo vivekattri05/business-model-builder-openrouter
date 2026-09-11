@@ -63,6 +63,15 @@ consultant name) that appears on the report.
   Ahrefs/Moz, and "client" framing) for a business that has nothing to do with SEO. The
   quality reviewer stage also runs an explicit pass hunting for and fixing exactly this
   kind of industry drift.
+- The Business Model Canvas and Empathy Map are written in a bold, Alex Hormozi style
+  Grand Slam Offer voice, not just "punchier wording": the UVP, Guarantee, and Price
+  blocks apply his Value Equation (maximize Dream Outcome and Perceived Likelihood,
+  minimize Time Delay and Effort), the guarantee is pushed to be bold and named rather
+  than a generic "satisfaction guarantee," price is built as a value stack anchored
+  well below the total, and the Niche block and the empathy map use his "starving
+  crowd" lens, real pain, real money, reachable, in the customer's raw, specific
+  words. The quality reviewer is told to preserve that voice, not flatten it back into
+  generic, hedged, corporate language while fixing consistency.
 - Failed calls are retried up to four times with exponential backoff, and each call is
   abandoned after five minutes rather than hanging forever.
 - The report preview renders in a sandboxed iframe with no same-origin access, so the
@@ -278,6 +287,8 @@ scripts, fonts, images, or network calls, so a downloaded report phones nobody.
 - Models: edit the options in `index.html`. To preselect one for everybody, set
   `DEFAULT_MODEL` in `app.js` to that id; leave it empty for no preselection.
 - Prompts and methodology: edit the `P` object and `METHOD` text in `pipeline.js`.
+- The offer voice: `HORMOZI_OFFER` (UVP/Guarantee/Price) and `HORMOZI_NICHE`
+  (Niche block and the empathy map) in `pipeline.js`, right after `NICHE_LOCK`.
 - Timeouts and retries: `CALL_TIMEOUT_MS`, `MAX_ATTEMPTS`, and `MAX_CONTINUES` at the
   top of `pipeline.js`.
 - Dashboard colours: the `:root` and `:root[data-theme="light"]` variables at the
